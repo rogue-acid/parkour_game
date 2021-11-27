@@ -1,3 +1,139 @@
-fn main() {
-    println!("Hello, world!");
+use raylib::prelude::*;
+
+struct Controls {
+	move_up: KeyboardKey,
+	move_down: KeyboardKey,
+	move_left: KeyboardKey,
+	move_right: KeyboardKey,
+	jump: KeyboardKey,
 }
+
+struct Player {
+	pos: Vector2,
+	width: f32,
+	height: f32,
+	color:  Color,
+	velocity: Vector2,
+	controls: Controls,
+	movement_speed: f32,
+}
+
+struct Clothes {
+	model: Vec<Vector2>,
+	offset: Vector2,
+}
+
+fn draw_rectangle(player: &Player, handle: &mut raylib::core::drawing::RaylibDrawHandle) {
+	handle.draw_rectangle(
+		player.pos.x as i32,
+		player.pos.y as i32,
+		player.width as i32,
+		player.height as i32,
+		player.color,
+	);
+}
+
+fn handle_player_movement(player: &mut Player, handle: &mut raylib::core::drawing::RaylibDrawHandle) {
+	if handle.is_key_pressed(player.controls.jump) {
+		player.velocity.y = -0.9
+	}
+	if handle.is_key_down(player.controls.move_left) {
+		player.pos.x -= player.movement_speed
+	}
+	if handle.is_key_down(player.controls.move_right) {
+		player.pos.x += player.movement_speed
+	}
+}
+
+fn main() {
+	let (mut rl, thread) = raylib::init()
+		.size(1280, 720)
+		.title("Hello, World")
+		.build();
+
+
+	let hat_texture = rl.load_texture(&thread, "hat.png").unwrap();
+	let bowtie_texture = rl.load_texture(&thread, "bowtie.png").unwrap();
+
+	let mut player_1 = Player {
+		pos: Vector2 {
+			x: 630.0,
+			y: 322.0,
+		},
+		width: 20.0,
+		height: 75.0,
+		color: Color { r: 232, g: 190, b: 172, a: 200 },
+		velocity: Vector2 {
+			x: 0.0,
+			y: 0.0
+		},
+		controls: Controls {
+			move_up: KeyboardKey::KEY_W,
+			move_down: KeyboardKey::KEY_S,
+			move_left: KeyboardKey::KEY_A,
+			move_right: KeyboardKey::KEY_D,
+			jump: KeyboardKey::KEY_SPACE,
+		},
+		movement_speed: 0.5,
+	};
+
+
+	let gravity = 0.001;
+
+	while !rl.window_should_close() {
+		let mut d = rl.begin_drawing(&thread);
+
+		//ground
+		d.draw_rectangle(
+			0,
+			600,
+			1280,
+			120,
+			Color { r: 8, g: 255, b: 65, a: 255 },
+		);
+
+		d.clear_background(Color { r: 43, g: 255, b: 241, a: 0 });
+
+
+		handle_player_movement(&mut player_1, &mut d);
+
+		player_1.pos += player_1.velocity;
+		player_1.velocity.y += gravity;
+
+		if player_1.pos.y + player_1.height > 600.0 {
+			player_1.pos.y = 600.0 - player_1.height;
+			player_1.velocity.y = 0.0;
+		}
+
+		//player
+		draw_rectangle(&player_1, &mut d);
+
+		let scale = 0.15;
+		d.draw_texture_ex(
+			&hat_texture,
+			player_1.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 10.0, y: 0.0 },
+			0.0,
+			scale,
+			Color::WHITE
+		);
+
+		
+		d.draw_texture_ex(
+			&bowtie_texture,
+			player_1.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 30.0, y: 55.0 },
+			0.0,
+			0.075,
+			Color::WHITE
+		);
+
+	}
+}
+
+/*
+fn get_screen_size(handle: &mut raylib::RaylibHandle) -> Vector2 {
+	Vector2 {
+		x: handle.get_screen_width() as f32,
+		y: handle.get_screen_height() as f32,
+	}
+}
+*/
