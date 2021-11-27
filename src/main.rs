@@ -54,6 +54,7 @@ fn main() {
 
 	let hat_texture = rl.load_texture(&thread, "hat.png").unwrap();
 	let bowtie_texture = rl.load_texture(&thread, "bowtie.png").unwrap();
+	let pirate_hat_texture = rl.load_texture(&thread, "pirate_hat.png").unwrap();
 
 	let mut player_1 = Player {
 		pos: Vector2 {
@@ -77,6 +78,27 @@ fn main() {
 		movement_speed: 0.5,
 	};
 
+	let mut player_2 = Player {
+		pos: Vector2 {
+			x: 630.0,
+			y: 322.0,
+		},
+		width: 20.0,
+		height: 75.0,
+		color: Color { r: 232, g: 190, b: 172, a: 200 },
+		velocity: Vector2 {
+			x: 0.0,
+			y: 0.0
+		},
+		controls: Controls {
+			move_up: KeyboardKey::KEY_UP,
+			move_down: KeyboardKey::KEY_DOWN,
+			move_left: KeyboardKey::KEY_LEFT,
+			move_right: KeyboardKey::KEY_RIGHT,
+			jump: KeyboardKey::KEY_RIGHT_CONTROL,
+		},
+		movement_speed: 0.5,
+	};
 
 	let gravity = 0.001;
 
@@ -96,6 +118,7 @@ fn main() {
 
 
 		handle_player_movement(&mut player_1, &mut d);
+		handle_player_movement(&mut player_2, &mut d);
 
 		player_1.pos += player_1.velocity;
 		player_1.velocity.y += gravity;
@@ -105,9 +128,19 @@ fn main() {
 			player_1.velocity.y = 0.0;
 		}
 
-		//player
-		draw_rectangle(&player_1, &mut d);
+		player_2.pos += player_2.velocity;
+		player_2.velocity.y += gravity;
 
+		if player_2.pos.y + player_2.height > 600.0 {
+			player_2.pos.y = 600.0 - player_2.height;
+			player_2.velocity.y = 0.0;
+		}
+
+		//players
+		draw_rectangle(&player_1, &mut d);
+		draw_rectangle(&player_2, &mut d);
+
+		//player 1
 		let scale = 0.15;
 		d.draw_texture_ex(
 			&hat_texture,
@@ -118,14 +151,24 @@ fn main() {
 		);
 
 		
+		let scale = 0.075;
 		d.draw_texture_ex(
 			&bowtie_texture,
 			player_1.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 30.0, y: 55.0 },
 			0.0,
-			0.075,
+			scale,
 			Color::WHITE
 		);
 
+		// player 2
+		let scale = 0.4;
+		d.draw_texture_ex(
+			&pirate_hat_texture,
+			player_2.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 8.0, y: 0.0 },
+			0.0,
+			scale,
+			Color::WHITE
+		);
 	}
 }
 
