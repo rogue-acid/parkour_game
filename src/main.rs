@@ -16,6 +16,7 @@ struct Player {
 	velocity: Vector2,
 	controls: Controls,
 	movement_speed: f32,
+	jump_power: f32,
 }
 
 struct Clothes {
@@ -33,15 +34,15 @@ fn draw_rectangle(player: &Player, handle: &mut raylib::core::drawing::RaylibDra
 	);
 }
 
-fn handle_player_movement(player: &mut Player, handle: &mut raylib::core::drawing::RaylibDrawHandle) {
+fn handle_player_movement(player: &mut Player, delta: f32, handle: &mut raylib::core::drawing::RaylibDrawHandle) {
 	if handle.is_key_pressed(player.controls.jump) {
-		player.velocity.y = -0.9
+		player.velocity.y = -player.jump_power * delta
 	}
 	if handle.is_key_down(player.controls.move_left) {
-		player.pos.x -= player.movement_speed
+		player.pos.x -= player.movement_speed * delta
 	}
 	if handle.is_key_down(player.controls.move_right) {
-		player.pos.x += player.movement_speed
+		player.pos.x += player.movement_speed * delta
 	}
 }
 
@@ -50,6 +51,8 @@ fn main() {
 		.size(1280, 720)
 		.title("Hello, World")
 		.build();
+
+	rl.set_target_fps(300);
 
 
 	let hat_texture = rl.load_texture(&thread, "hat.png").unwrap();
@@ -75,7 +78,8 @@ fn main() {
 			move_right: KeyboardKey::KEY_D,
 			jump: KeyboardKey::KEY_SPACE,
 		},
-		movement_speed: 0.5,
+		movement_speed: 2000.0,
+		jump_power: 350000.0,
 	};
 
 	let mut player_2 = Player {
@@ -97,12 +101,14 @@ fn main() {
 			move_right: KeyboardKey::KEY_RIGHT,
 			jump: KeyboardKey::KEY_RIGHT_CONTROL,
 		},
-		movement_speed: 0.5,
+		movement_speed: 2000.0,
+		jump_power: 350000.0,
 	};
 
-	let gravity = 0.001;
+	let gravity = 2000.0;
 
 	while !rl.window_should_close() {
+		let delta = rl.get_frame_time();
 		let mut d = rl.begin_drawing(&thread);
 
 		//ground
@@ -117,19 +123,19 @@ fn main() {
 		d.clear_background(Color { r: 43, g: 255, b: 241, a: 0 });
 
 
-		handle_player_movement(&mut player_1, &mut d);
-		handle_player_movement(&mut player_2, &mut d);
+		handle_player_movement(&mut player_1, delta, &mut d);
+		handle_player_movement(&mut player_2, delta, &mut d);
 
-		player_1.pos += player_1.velocity;
-		player_1.velocity.y += gravity;
+		player_1.pos += player_1.velocity * delta;
+		player_1.velocity.y += gravity * delta;
 
 		if player_1.pos.y + player_1.height > 600.0 {
 			player_1.pos.y = 600.0 - player_1.height;
 			player_1.velocity.y = 0.0;
 		}
 
-		player_2.pos += player_2.velocity;
-		player_2.velocity.y += gravity;
+		player_2.pos += player_2.velocity * delta;
+		player_2.velocity.y += gravity * delta;
 
 		if player_2.pos.y + player_2.height > 600.0 {
 			player_2.pos.y = 600.0 - player_2.height;
