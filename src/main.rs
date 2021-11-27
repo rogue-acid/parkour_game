@@ -55,9 +55,9 @@ fn main() {
 	rl.set_target_fps(300);
 
 
-	let hat_texture = rl.load_texture(&thread, "hat.png").unwrap();
-	let bowtie_texture = rl.load_texture(&thread, "bowtie.png").unwrap();
-	let pirate_hat_texture = rl.load_texture(&thread, "pirate_hat.png").unwrap();
+	let hat_texture = rl.load_texture(&thread, "assets/sprites/hat.png").unwrap();
+	let bowtie_texture = rl.load_texture(&thread, "assets/sprites/bowtie.png").unwrap();
+	let pirate_hat_texture = rl.load_texture(&thread, "assets/sprites/pirate_hat.png").unwrap();
 
 	let mut player_1 = Player {
 		pos: Vector2 {
