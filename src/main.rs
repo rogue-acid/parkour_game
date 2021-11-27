@@ -11,12 +11,13 @@ struct GameState {
 
 enum SceneType {
 	Game,
+	MainMenu,
 }
 
 trait Scene {
 	fn init(&mut self);
-	fn update(&mut self, d: &mut RaylibDrawHandle, delta: f32);
-	fn display(&mut self, d: &mut RaylibDrawHandle, game_state: &GameState);
+	fn update(&mut self, d: &mut RaylibDrawHandle, game_state: &mut GameState, delta: f32);
+	fn display(&mut self, d: &mut RaylibDrawHandle, game_state: &mut GameState);
 }
 
 fn main() {
@@ -28,7 +29,7 @@ fn main() {
 	rl.set_target_fps(300);
 
 	let mut game_state = GameState {
-		current_scene: SceneType::Game,
+		current_scene: SceneType::MainMenu,
 		assets: Default::default(),
 	};
 
@@ -50,14 +51,21 @@ fn main() {
 	let mut game_scene = scenes::game::GameScene::default();
 	game_scene.init();
 
+	let mut main_menu = scenes::main_menu::MainMenu::default();
+
 	while !rl.window_should_close() {
 		let delta = rl.get_frame_time();
 		let mut d = rl.begin_drawing(&thread);
 
 		match game_state.current_scene {
 			SceneType::Game => {
-				game_scene.update(&mut d, delta);
-				game_scene.display(&mut d, &game_state);
+				game_scene.update(&mut d, &mut game_state, delta);
+				game_scene.display(&mut d, &mut game_state);
+			}
+
+			SceneType::MainMenu => {
+				main_menu.update(&mut d, &mut game_state, delta);
+				main_menu.display(&mut d, &mut game_state);
 			}
 		};
 	}

@@ -100,7 +100,7 @@ impl Scene for GameScene {
 		});
 	}
 
-	fn update(&mut self, d: &mut RaylibDrawHandle, delta: f32) {
+	fn update(&mut self, d: &mut RaylibDrawHandle, game_state: &mut GameState, delta: f32) {
 		for mut player in self.players.iter_mut() {
 			handle_player_movement(&mut player, delta, d);
 
@@ -114,7 +114,7 @@ impl Scene for GameScene {
 		}
 	}
 
-	fn display(&mut self, d: &mut RaylibDrawHandle, game_state: &GameState) {
+	fn display(&mut self, d: &mut RaylibDrawHandle, game_state: &mut GameState) {
 		d.clear_background(Color { r: 43, g: 255, b: 241, a: 255 });
 
 		//ground
