@@ -160,7 +160,7 @@ fn main() {
 		let scale = 0.075;
 		d.draw_texture_ex(
 			&bowtie_texture,
-			player_1.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 30.0, y: 55.0 },
+			player_1.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 12.0, y: 40.0 },
 			0.0,
 			scale,
 			Color::WHITE
