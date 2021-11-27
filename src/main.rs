@@ -78,8 +78,8 @@ fn main() {
 			move_right: KeyboardKey::KEY_D,
 			jump: KeyboardKey::KEY_SPACE,
 		},
-		movement_speed: 2000.0,
-		jump_power: 350000.0,
+		movement_speed: 800.0,
+		jump_power: 400000.0,
 	};
 
 	let mut player_2 = Player {
@@ -101,11 +101,11 @@ fn main() {
 			move_right: KeyboardKey::KEY_RIGHT,
 			jump: KeyboardKey::KEY_RIGHT_CONTROL,
 		},
-		movement_speed: 2000.0,
-		jump_power: 350000.0,
+		movement_speed: 800.0,
+		jump_power: 400000.0,
 	};
 
-	let gravity = 2000.0;
+	let gravity = 2750.0;
 
 	while !rl.window_should_close() {
 		let delta = rl.get_frame_time();
