@@ -120,7 +120,7 @@ fn main() {
 			Color { r: 8, g: 255, b: 65, a: 255 },
 		);
 
-		d.clear_background(Color { r: 43, g: 255, b: 241, a: 200 });
+		d.clear_background(Color { r: 43, g: 255, b: 241, a: 255 });
 
 
 		handle_player_movement(&mut player_1, delta, &mut d);
