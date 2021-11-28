@@ -1,3 +1,5 @@
+use std::ffi::{CStr, CString};
+
 use raylib::prelude::*;
 
 use crate::{ GameState, Scene, SceneType };
@@ -11,7 +13,17 @@ impl Scene for MainMenu {
 	}
 
 	fn update(&mut self, d: &mut RaylibDrawHandle, game_state: &mut GameState, delta: f32) {
-		if d.is_mouse_button_released(MouseButton::MOUSE_LEFT_BUTTON) {
+		let button_pressed = d.gui_button(
+			Rectangle {
+				x: 500.0,
+				y: 300.0,
+				width: 300.0,
+				height: 100.0
+			},
+			Some(CString::new("Play").unwrap().as_c_str())
+		);
+
+		if button_pressed {
 			game_state.current_scene = SceneType::Game;
 		}
 	}
@@ -26,6 +38,6 @@ impl Scene for MainMenu {
 			d.draw_text(text, d.get_screen_width() / 2 - text_width / 2, 140, font_size, Color { r: 220, g: 220, b: 220, a: 255 });
 		}
 
-		d.draw_text("Click to continue", 380, 550, 60, Color { r: 220, g: 220, b: 220, a: 255 });
+		// d.draw_text("Click to continue", 380, 550, 60, Color { r: 220, g: 220, b: 220, a: 255 });
 	}
 }
