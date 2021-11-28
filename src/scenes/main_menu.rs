@@ -2,7 +2,7 @@ use std::ffi::{CStr, CString};
 
 use raylib::prelude::*;
 
-use crate::{ GameState, Scene, SceneType };
+use crate::{ GameState, Scene, SceneType, GameStartType };
 
 #[derive(Default)]
 pub struct MainMenu {
@@ -13,18 +13,32 @@ impl Scene for MainMenu {
 	}
 
 	fn update(&mut self, d: &mut RaylibDrawHandle, game_state: &mut GameState, delta: f32) {
-		let button_pressed = d.gui_button(
+		let button_continue_pressed = d.gui_button(
 			Rectangle {
-				x: 500.0,
-				y: 300.0,
-				width: 300.0,
-				height: 100.0
+				x: 550.0,
+				y: 320.0,
+				width: 200.0,
+				height: 60.0
 			},
-			Some(CString::new("Play").unwrap().as_c_str())
+			Some(CString::new("Continue").unwrap().as_c_str())
 		);
 
-		if button_pressed {
-			game_state.current_scene = SceneType::Game;
+		let button_new_game_pressed = d.gui_button(
+			Rectangle {
+				x: 550.0,
+				y: 420.0,
+				width: 200.0,
+				height: 60.0
+			},
+			Some(CString::new("New Game").unwrap().as_c_str())
+		);
+
+		if button_continue_pressed{
+			game_state.current_scene = SceneType::Game(GameStartType::Continue);
+		}
+
+		if button_new_game_pressed{
+			game_state.current_scene = SceneType::Game(GameStartType::New);
 		}
 	}
 

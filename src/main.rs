@@ -10,10 +10,13 @@ struct GameState {
 }
 
 enum SceneType {
-	Game,
+	Game(GameStartType),
 	GamePauseMenu,
 	MainMenu,
 }
+
+#[derive(PartialEq)]
+enum GameStartType { New, Continue }
 
 trait Scene {
 	fn init(&mut self);
@@ -78,7 +81,13 @@ fn main() {
 		let mut d = rl.begin_drawing(&thread);
 
 		match game_state.current_scene {
-			SceneType::Game => {
+			SceneType::Game(ref mut start_type) => {
+				if start_type == &GameStartType::New {
+					game_scene = scenes::game::GameScene::default();
+					game_scene.init();
+					*start_type = GameStartType::Continue;
+				}
+
 				game_scene.update(&mut d, &mut game_state, delta);
 				game_scene.display(&mut d, &mut game_state);
 			}

@@ -2,7 +2,7 @@ use std::ffi::CString;
 
 use raylib::prelude::*;
 
-use crate::{ GameState, Scene, SceneType };
+use crate::{GameStartType, GameState, Scene, SceneType};
 
 #[derive(Default)]
 pub struct GamePauseMenuScene {
@@ -14,7 +14,7 @@ impl Scene for GamePauseMenuScene {
 
 	fn update(&mut self, d: &mut RaylibDrawHandle, game_state: &mut GameState, delta: f32) {
 		if d.is_key_pressed(KeyboardKey::KEY_ESCAPE) {
-			game_state.current_scene = SceneType::Game;
+			game_state.current_scene = SceneType::Game(GameStartType::Continue);
 		}
 	}
 
@@ -50,7 +50,7 @@ impl Scene for GamePauseMenuScene {
 		let continue_button_text = CString::new("continue").unwrap();
 
 		if d.gui_button(continue_button_bound, Some(continue_button_text.as_c_str())) {
-			game_state.current_scene = SceneType::Game;
+			game_state.current_scene = SceneType::Game(GameStartType::Continue);
 		}
 	}
 }
