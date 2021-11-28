@@ -5,6 +5,7 @@ use raylib::prelude::*;
 mod scenes;
 
 struct GameState {
+	should_close: bool,
 	current_scene: SceneType,
 	assets: HashMap<String, Texture2D>
 }
@@ -37,6 +38,7 @@ fn main() {
 	rl.set_exit_key(Some(KeyboardKey::KEY_Q));
 
 	let mut game_state = GameState {
+		should_close: false,
 		current_scene: SceneType::MainMenu,
 		assets: Default::default(),
 	};
@@ -81,7 +83,7 @@ fn main() {
 	let mut settings = scenes::settings::Settings::default();
 	settings.init();
 
-	while !rl.window_should_close() {
+	while !game_state.should_close && !rl.window_should_close() {
 		let delta = rl.get_frame_time();
 		let mut d = rl.begin_drawing(&thread);
 

@@ -43,6 +43,16 @@ impl Scene for MainMenu {
 			Some(CString::new("Settings").unwrap().as_c_str())
 		);
 
+		let button_quit_pressed = d.gui_button(
+			Rectangle {
+				x: 550.0,
+				y: 620.0,
+				width: 200.0,
+				height: 60.0
+			},
+			Some(CString::new("Quit").unwrap().as_c_str())
+		);
+
 		if button_continue_pressed{
 			game_state.current_scene = SceneType::Game(GameStartType::Continue);
 		}
@@ -53,6 +63,10 @@ impl Scene for MainMenu {
 
 		if button_settings_pressed {
 			game_state.current_scene = SceneType::Settings { last_scene: Box::new(game_state.current_scene.clone()) };
+		}
+
+		if button_quit_pressed {
+			game_state.should_close = true;
 		}
 	}
 

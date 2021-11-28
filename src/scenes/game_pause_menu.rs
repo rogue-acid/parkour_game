@@ -65,5 +65,18 @@ impl Scene for GamePauseMenuScene {
 		if d.gui_button(settings_button_bound, Some(settings_button_text.as_c_str())) {
 			game_state.current_scene = SceneType::Settings { last_scene: Box::new(game_state.current_scene.clone()) }
 		}
+
+		let quit_button_bound = Rectangle {
+			x: 600.0,
+			y: 495.0,
+			width: 100.0,
+			height: 50.0,
+		};
+
+		let quit_button_text = CString::new("Quit game").unwrap();
+
+		if d.gui_button(quit_button_bound, Some(quit_button_text.as_c_str())) {
+			game_state.should_close = true;
+		}
 	}
 }
