@@ -58,7 +58,7 @@ impl Scene for GameScene {
 				x: 20.0,
 				y: 75.0,
 			},
-			color: Color { r: 232, g: 190, b: 172, a: 200 },
+			color: Color { r: 232, g: 190, b: 172, a: 255 },
 			velocity: Vector2 {
 				x: 0.0,
 				y: 0.0
@@ -83,7 +83,7 @@ impl Scene for GameScene {
 				x: 20.0,
 				y: 75.0,
 			},
-			color: Color { r: 232, g: 190, b: 172, a: 200 },
+			color: Color { r: 232, g: 190, b: 172, a: 255 },
 			velocity: Vector2 {
 				x: 0.0,
 				y: 0.0
@@ -131,11 +131,9 @@ impl Scene for GameScene {
 		let player_1 = &self.players[0];
 		let player_2 = &self.players[1];
 
-		//players
-		draw_player(&player_1, d);
-		draw_player(&player_2, d);
-
 		//player 1
+		draw_player(&player_1, d);
+
 		let scale = 0.15;
 		d.draw_texture_ex(
 			&game_state.assets["hat"],
@@ -156,6 +154,26 @@ impl Scene for GameScene {
 		);
 
 		// player 2
+		let scale = 0.2;
+		d.draw_texture_ex(
+			&game_state.assets["branch"],
+			player_2.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 12.0, y: 40.0 },
+			0.0,
+			scale,
+			Color::WHITE
+		);
+
+		let scale = 0.2;
+		d.draw_texture_ex(
+			&game_state.assets["bird"],
+			player_2.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 25.0, y: 22.0 },
+			0.0,
+			scale,
+			Color::WHITE
+		);
+
+		draw_player(&player_2, d);
+
 		let scale = 0.4;
 		d.draw_texture_ex(
 			&game_state.assets["pirate_hat"],
@@ -165,21 +183,6 @@ impl Scene for GameScene {
 			Color::WHITE
 		);
 
-		d.draw_texture_ex(
-			&game_state.assets["branch"],
-			player_2.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 80.0, y: 85.0 },
-			0.0,
-			0.25,
-			Color::WHITE
-		);
-
-		d.draw_texture_ex(
-			&game_state.assets["bird"],
-			player_2.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 85.0, y: 45.0 },
-			0.0,
-			0.3,
-			Color::WHITE
-		);
 	}
 
 }

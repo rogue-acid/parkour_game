@@ -56,9 +56,12 @@ fn main() {
 		rl.load_texture(&thread, "assets/sprites/branch.png").unwrap(),
 	);
 
+	let mut bird_image = Image::load_image("assets/sprites/bird.png").unwrap();
+	bird_image.flip_horizontal();
+
 	game_state.assets.insert(
 		"bird".into(),
-		rl.load_texture(&thread, "assets/sprites/bird.png").unwrap(),
+		rl.load_texture_from_image(&thread, &bird_image).unwrap(),
 	);
 
 	let mut game_scene = scenes::game::GameScene::default();
