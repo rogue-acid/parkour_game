@@ -48,6 +48,16 @@ fn main() {
 		rl.load_texture(&thread, "assets/sprites/pirate_hat.png").unwrap(),
 	);
 
+	game_state.assets.insert(
+		"branch".into(),
+		rl.load_texture(&thread, "assets/sprites/branch.png").unwrap(),
+	);
+
+	game_state.assets.insert(
+		"bird".into(),
+		rl.load_texture(&thread, "assets/sprites/bird.png").unwrap(),
+	);
+
 	let mut game_scene = scenes::game::GameScene::default();
 	game_scene.init();
 
