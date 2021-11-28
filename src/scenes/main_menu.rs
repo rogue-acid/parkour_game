@@ -33,12 +33,26 @@ impl Scene for MainMenu {
 			Some(CString::new("New Game").unwrap().as_c_str())
 		);
 
+		let button_settings_pressed = d.gui_button(
+			Rectangle {
+				x: 550.0,
+				y: 520.0,
+				width: 200.0,
+				height: 60.0
+			},
+			Some(CString::new("Settings").unwrap().as_c_str())
+		);
+
 		if button_continue_pressed{
 			game_state.current_scene = SceneType::Game(GameStartType::Continue);
 		}
 
 		if button_new_game_pressed{
 			game_state.current_scene = SceneType::Game(GameStartType::New);
+		}
+
+		if button_settings_pressed {
+			game_state.current_scene = SceneType::Settings { last_scene: Box::new(game_state.current_scene.clone()) };
 		}
 	}
 

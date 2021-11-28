@@ -29,7 +29,7 @@ impl Scene for GamePauseMenuScene {
 
 		let menu_button_bound = Rectangle {
 			x: 600.0,
-			y: 270.0,
+			y: 420.0,
 			width: 100.0,
 			height: 50.0,
 		};
@@ -42,7 +42,7 @@ impl Scene for GamePauseMenuScene {
 
 		let continue_button_bound = Rectangle {
 			x: 600.0,
-			y: 345.0,
+			y: 270.0,
 			width: 100.0,
 			height: 50.0,
 		};
@@ -51,6 +51,19 @@ impl Scene for GamePauseMenuScene {
 
 		if d.gui_button(continue_button_bound, Some(continue_button_text.as_c_str())) {
 			game_state.current_scene = SceneType::Game(GameStartType::Continue);
+		}
+
+		let settings_button_bound = Rectangle {
+			x: 600.0,
+			y: 345.0,
+			width: 100.0,
+			height: 50.0,
+		};
+
+		let settings_button_text = CString::new("Settings").unwrap();
+
+		if d.gui_button(settings_button_bound, Some(settings_button_text.as_c_str())) {
+			game_state.current_scene = SceneType::Settings { last_scene: Box::new(game_state.current_scene.clone()) }
 		}
 	}
 }

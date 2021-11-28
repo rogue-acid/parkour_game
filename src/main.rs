@@ -9,13 +9,15 @@ struct GameState {
 	assets: HashMap<String, Texture2D>
 }
 
+#[derive(Debug, Clone, PartialEq)]
 enum SceneType {
 	Game(GameStartType),
 	GamePauseMenu,
 	MainMenu,
+	Settings { last_scene: Box<SceneType> },
 }
 
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 enum GameStartType { New, Continue }
 
 trait Scene {
@@ -76,6 +78,9 @@ fn main() {
 	let mut main_menu = scenes::main_menu::MainMenu::default();
 	main_menu.init();
 
+	let mut settings = scenes::settings::Settings::default();
+	settings.init();
+
 	while !rl.window_should_close() {
 		let delta = rl.get_frame_time();
 		let mut d = rl.begin_drawing(&thread);
@@ -101,6 +106,25 @@ fn main() {
 			SceneType::MainMenu => {
 				main_menu.update(&mut d, &mut game_state, delta);
 				main_menu.display(&mut d, &mut game_state);
+			}
+
+			SceneType::Settings { ref last_scene } => {
+				let last_scene = &**last_scene;
+
+				if last_scene == &SceneType::MainMenu {
+					d.clear_background(Color { r: 100, g: 100, b: 160, a: 255 });
+				} else if last_scene == &SceneType::GamePauseMenu {
+					game_scene.display(&mut d, &mut game_state);
+
+					d.draw_rectangle_v(
+						Vector2 { x: 0.0, y: 0.0 },
+						Vector2 { x: d.get_screen_width() as f32, y: d.get_screen_height() as f32 },
+						Color { r: 0, g: 0, b: 0, a: 120 },
+						);
+				}
+
+				settings.update(&mut d, &mut game_state, delta);
+				settings.display(&mut d, &mut game_state);
 			}
 		};
 	}
