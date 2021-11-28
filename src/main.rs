@@ -11,6 +11,7 @@ struct GameState {
 
 enum SceneType {
 	Game,
+	GamePauseMenu,
 	MainMenu,
 }
 
@@ -27,6 +28,8 @@ fn main() {
 		.build();
 
 	rl.set_target_fps(300);
+
+	rl.set_exit_key(Some(KeyboardKey::KEY_Q));
 
 	let mut game_state = GameState {
 		current_scene: SceneType::MainMenu,
@@ -61,7 +64,11 @@ fn main() {
 	let mut game_scene = scenes::game::GameScene::default();
 	game_scene.init();
 
+	let mut game_pause_menu_scene = scenes::game_pause_menu::GamePauseMenuScene::default();
+	game_pause_menu_scene.init();
+
 	let mut main_menu = scenes::main_menu::MainMenu::default();
+	main_menu.init();
 
 	while !rl.window_should_close() {
 		let delta = rl.get_frame_time();
@@ -71,6 +78,12 @@ fn main() {
 			SceneType::Game => {
 				game_scene.update(&mut d, &mut game_state, delta);
 				game_scene.display(&mut d, &mut game_state);
+			}
+
+			SceneType::GamePauseMenu => {
+				game_scene.display(&mut d, &mut game_state);
+				game_pause_menu_scene.update(&mut d, &mut game_state, delta);
+				game_pause_menu_scene.display(&mut d, &mut game_state);
 			}
 
 			SceneType::MainMenu => {

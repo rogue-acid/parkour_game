@@ -1,6 +1,6 @@
 use raylib::prelude::*;
 
-use crate::{ GameState, Scene };
+use crate::{ GameState, Scene, SceneType };
 
 struct Player {
 	pos: Vector2,
@@ -111,6 +111,10 @@ impl Scene for GameScene {
 				player.pos.y = 600.0 - player.size.y;
 				player.velocity.y = 0.0;
 			}
+		}
+
+		if d.is_key_pressed(KeyboardKey::KEY_ESCAPE) {
+			game_state.current_scene = SceneType::GamePauseMenu;
 		}
 	}
 
