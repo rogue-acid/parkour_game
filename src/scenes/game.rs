@@ -160,6 +160,22 @@ impl Scene for GameScene {
 			scale,
 			Color::WHITE
 		);
+
+		d.draw_texture_ex(
+			&game_state.assets["branch"],
+			player_2.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 80.0, y: 85.0 },
+			0.0,
+			0.25,
+			Color::WHITE
+		);
+
+		d.draw_texture_ex(
+			&game_state.assets["bird"],
+			player_2.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 85.0, y: 45.0 },
+			0.0,
+			0.3,
+			Color::WHITE
+		);
 	}
 
 }
