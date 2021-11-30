@@ -7,7 +7,8 @@ mod scenes;
 struct GameState {
 	should_close: bool,
 	current_scene: SceneType,
-	assets: HashMap<String, Texture2D>
+	assets: HashMap<String, Texture2D>,
+	window_size: Vector2,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -28,8 +29,15 @@ trait Scene {
 }
 
 fn main() {
+	let mut game_state = GameState {
+		should_close: false,
+		current_scene: SceneType::MainMenu,
+		assets: Default::default(),
+		window_size: Vector2 { x: 1280.0, y: 720.0 },
+	};
+
 	let (mut rl, thread) = raylib::init()
-		.size(1280, 720)
+		.size(game_state.window_size.x as i32, game_state.window_size.y as i32)
 		.title("Hello, World")
 		.build();
 
@@ -37,11 +45,6 @@ fn main() {
 
 	rl.set_exit_key(Some(KeyboardKey::KEY_Q));
 
-	let mut game_state = GameState {
-		should_close: false,
-		current_scene: SceneType::MainMenu,
-		assets: Default::default(),
-	};
 
 	game_state.assets.insert(
 		"hat".into(),
@@ -84,6 +87,13 @@ fn main() {
 	settings.init();
 
 	while !game_state.should_close && !rl.window_should_close() {
+		if rl.is_window_resized() {
+			game_state.window_size = Vector2 {
+				x: rl.get_screen_width() as f32,
+				y: rl.get_screen_height() as f32,
+			}
+		}
+
 		let delta = rl.get_frame_time();
 		let mut d = rl.begin_drawing(&thread);
 
