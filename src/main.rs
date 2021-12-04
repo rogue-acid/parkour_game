@@ -127,12 +127,11 @@ fn main() {
 					d.clear_background(Color { r: 100, g: 100, b: 160, a: 255 });
 				} else if last_scene == &SceneType::GamePauseMenu {
 					game_scene.display(&mut d, &mut game_state);
-
 					d.draw_rectangle_v(
-						Vector2 { x: 0.0, y: 0.0 },
-						Vector2 { x: d.get_screen_width() as f32, y: d.get_screen_height() as f32 },
-						Color { r: 0, g: 0, b: 0, a: 120 },
-						);
+						Vector2 { x: 150.0, y: 100.0 },
+						Vector2 { x: 1000.0, y: 550.0 },
+						Color { r: 125, g: 125, b: 125, a: 255 },
+					);
 				}
 
 				settings.update(&mut d, &mut game_state, delta);
