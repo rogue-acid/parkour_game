@@ -44,12 +44,20 @@ impl Collidable for Block {
 	}
 }
 
-struct Controls {
-	move_up: KeyboardKey,
-	move_down: KeyboardKey,
-	move_left: KeyboardKey,
-	move_right: KeyboardKey,
-	jump: KeyboardKey,
+enum Controls {
+	Keyboard {
+		move_up: KeyboardKey,
+		move_down: KeyboardKey,
+		move_left: KeyboardKey,
+		move_right: KeyboardKey,
+		jump: KeyboardKey,
+	},
+	GamePad {
+		id: i32,
+		jump: GamepadButton,
+		deadzone_amount: f32,
+		move_left_right: GamepadAxis,
+	}
 }
 
 fn draw_player(player: &Player, handle: &mut raylib::core::drawing::RaylibDrawHandle) {
@@ -124,15 +132,34 @@ impl Collidable for PhysicsObject {
 }
 
 fn handle_player_movement(player: &mut Player, delta: f32, handle: &mut raylib::core::drawing::RaylibDrawHandle) {
-	if handle.is_key_pressed(player.controls.jump) {
-		player.velocity.y = -player.jump_power * delta
-	}
-	if handle.is_key_down(player.controls.move_left) {
-		player.velocity.x = -player.movement_speed;
-	} else if handle.is_key_down(player.controls.move_right) {
-		player.velocity.x = player.movement_speed;
-	} else {
-		player.velocity.x = 0.0;
+	match player.controls {
+		Controls::Keyboard { jump, move_left, move_right, .. } => {
+			if handle.is_key_pressed(jump) {
+				player.velocity.y = -player.jump_power * delta
+			}
+
+			if handle.is_key_down(move_left) {
+				player.velocity.x = -player.movement_speed;
+			} else if handle.is_key_down(move_right) {
+				player.velocity.x = player.movement_speed;
+			} else {
+				player.velocity.x = 0.0;
+			}
+		},
+
+		Controls::GamePad { id, jump, move_left_right, deadzone_amount, .. } => {
+			if handle.is_gamepad_button_pressed(id, jump) {
+				player.velocity.y = -player.jump_power * delta
+			}
+
+			let left_right_amount = handle.get_gamepad_axis_movement(id, move_left_right);
+
+			if f32::abs(left_right_amount) > deadzone_amount {
+				player.velocity.x = player.movement_speed * left_right_amount;
+			} else {
+				player.velocity.x = 0.0;
+			}
+		}
 	}
 }
 
@@ -172,12 +199,12 @@ impl Scene for GameScene {
 				x: 0.0,
 				y: 0.0
 			},
-			controls: Controls {
-				move_up: KeyboardKey::KEY_W,
-				move_down: KeyboardKey::KEY_S,
-				move_left: KeyboardKey::KEY_A,
-				move_right: KeyboardKey::KEY_D,
-				jump: KeyboardKey::KEY_SPACE,
+			controls: Controls::GamePad {
+				// TODO: this should be auto detected
+				id: 0,
+				jump: GamepadButton::GAMEPAD_BUTTON_RIGHT_FACE_DOWN,
+				deadzone_amount: 0.14,
+				move_left_right: GamepadAxis::GAMEPAD_AXIS_LEFT_X,
 			},
 			movement_speed: 800.0,
 			jump_power: 400000.0,
@@ -197,7 +224,7 @@ impl Scene for GameScene {
 				x: 0.0,
 				y: 0.0
 			},
-			controls: Controls {
+			controls: Controls::Keyboard {
 				move_up: KeyboardKey::KEY_UP,
 				move_down: KeyboardKey::KEY_DOWN,
 				move_left: KeyboardKey::KEY_LEFT,
