@@ -12,6 +12,38 @@ struct Player {
 	jump_power: f32,
 }
 
+struct Block {
+	pos: Vector2,
+	dim: Vector2,
+	color:  Color,
+}
+
+impl Collidable for Player {
+	fn get_physics_object(&self) -> PhysicsObject {
+		PhysicsObject {
+			pos: self.pos.clone(),
+			dim: self.size.clone(),
+		}
+	}
+
+	fn is_colliding(&self, other: &dyn Collidable) -> bool {
+		self.get_physics_object().is_colliding(other)
+	}
+}
+
+impl Collidable for Block {
+	fn get_physics_object(&self) -> PhysicsObject {
+		PhysicsObject {
+			pos: self.pos.clone(),
+			dim: self.dim.clone(),
+		}
+	}
+
+	fn is_colliding(&self, other: &dyn Collidable) -> bool {
+		self.get_physics_object().is_colliding(other)
+	}
+}
+
 struct Controls {
 	move_up: KeyboardKey,
 	move_down: KeyboardKey,
@@ -96,22 +128,30 @@ fn handle_player_movement(player: &mut Player, delta: f32, handle: &mut raylib::
 		player.velocity.y = -player.jump_power * delta
 	}
 	if handle.is_key_down(player.controls.move_left) {
-		player.pos.x -= player.movement_speed * delta
-	}
-	if handle.is_key_down(player.controls.move_right) {
-		player.pos.x += player.movement_speed * delta
+		player.velocity.x = -player.movement_speed;
+	} else if handle.is_key_down(player.controls.move_right) {
+		player.velocity.x = player.movement_speed;
+	} else {
+		player.velocity.x = 0.0;
 	}
 }
 
 #[derive(Default)]
 pub struct GameScene {
 	players: Vec<Player>,
+	blocks: Vec<Block>,
 }
 
 const GRAVITY: f32 = 2750.0;
 
 impl Scene for GameScene {
 	fn init(&mut self) {
+		self.blocks.push(Block {
+			pos: Vector2 { x: 0.0, y: 600.0 },
+			dim: Vector2 { x: 1280.0, y: 120.0 },
+			color: Color { r: 8, g: 255, b: 65, a: 255 },
+		});
+
 		self.players.push(Player {
 			pos: Vector2 {
 				x: 630.0,
@@ -167,12 +207,22 @@ impl Scene for GameScene {
 		for mut player in self.players.iter_mut() {
 			handle_player_movement(&mut player, delta, d);
 
-			player.pos += player.velocity * delta;
 			player.velocity.y += GRAVITY * delta;
 
-			if player.pos.y + player.size.y > 600.0 {
-				player.pos.y = 600.0 - player.size.y;
-				player.velocity.y = 0.0;
+			player.pos.y += player.velocity.y * delta;
+			for block in self.blocks.iter() {
+				if player.is_colliding(block) {
+					player.pos.y -= player.velocity.y * delta;
+					player.velocity.y = 0.0;
+				}
+			}
+
+			player.pos.x += player.velocity.x * delta;
+			for block in self.blocks.iter() {
+				if player.is_colliding(block) {
+					player.pos.x -= player.velocity.x * delta;
+					player.velocity.x = 0.0;
+				}
 			}
 		}
 
@@ -184,12 +234,13 @@ impl Scene for GameScene {
 	fn display(&mut self, d: &mut RaylibDrawHandle, game_state: &mut GameState) {
 		d.clear_background(Color { r: 43, g: 255, b: 241, a: 255 });
 
-		//ground
-		d.draw_rectangle_v(
-			Vector2 { x: 0.0, y: 600.0 },
-			Vector2 { x: 1280.0, y: 120.0 },
-			Color { r: 8, g: 255, b: 65, a: 255 },
-		);
+		for block in self.blocks.iter() {
+			d.draw_rectangle_v(
+				block.pos,
+				block.dim,
+				block.color,
+			)
+		}
 
 		let player_1 = &self.players[0];
 		let player_2 = &self.players[1];
