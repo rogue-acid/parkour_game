@@ -28,6 +28,69 @@ fn draw_player(player: &Player, handle: &mut raylib::core::drawing::RaylibDrawHa
 	);
 }
 
+#[derive(Clone)]
+struct PhysicsObject {
+	pos: Vector2,
+	dim: Vector2,
+}
+
+impl PhysicsObject {
+	fn contains_point(&self, point: &Vector2) -> bool {
+		point.x > self.pos.x &&
+		point.x < self.pos.x + self.dim.x &&
+		point.y > self.pos.y &&
+		point.x < self.pos.y + self.dim.y
+	}
+
+	fn corners(&self) -> [Vector2; 4] {
+		[
+			Vector2 { x: self.pos.x,              y: self.pos.y              },
+			Vector2 { x: self.pos.x + self.dim.x, y: self.pos.y              },
+			Vector2 { x: self.pos.x,              y: self.pos.y + self.dim.y },
+			Vector2 { x: self.pos.x + self.dim.x, y: self.pos.y + self.dim.y },
+		]
+	}
+}
+
+trait Collidable {
+	fn get_physics_object(&self) -> PhysicsObject;
+	fn is_colliding(&self, other: &dyn Collidable) -> bool;
+}
+
+impl Collidable for PhysicsObject {
+	fn get_physics_object(&self) -> PhysicsObject {
+		self.clone()
+	}
+
+	fn is_colliding(&self, other: &dyn Collidable) -> bool {
+		let other = other.get_physics_object();
+
+		let mut is_colliding = false;
+
+		for corner in self.corners() {
+			if is_colliding {
+				break
+			}
+
+			if other.contains_point(&corner) {
+				is_colliding = true
+			}
+		}
+
+		for corner in other.corners() {
+			if is_colliding {
+				break
+			}
+
+			if self.contains_point(&corner) {
+				is_colliding = true
+			}
+		}
+
+		is_colliding
+	}
+}
+
 fn handle_player_movement(player: &mut Player, delta: f32, handle: &mut raylib::core::drawing::RaylibDrawHandle) {
 	if handle.is_key_pressed(player.controls.jump) {
 		player.velocity.y = -player.jump_power * delta
