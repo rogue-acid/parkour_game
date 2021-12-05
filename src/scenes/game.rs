@@ -152,6 +152,12 @@ impl Scene for GameScene {
 			color: Color { r: 8, g: 255, b: 65, a: 255 },
 		});
 
+		self.blocks.push(Block {
+			pos: Vector2 { x: 70.0, y: 300.0 },
+			dim: Vector2 { x: 350.0, y: 120.0 },
+			color: Color::PURPLE,
+		});
+
 		self.players.push(Player {
 			pos: Vector2 {
 				x: 630.0,
