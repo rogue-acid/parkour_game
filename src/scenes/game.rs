@@ -234,6 +234,31 @@ impl Scene for GameScene {
 			movement_speed: 800.0,
 			jump_power: 400000.0,
 		});
+
+		self.players.push(Player {
+			pos: Vector2 {
+				x: 630.0,
+				y: 322.0,
+			},
+			size: Vector2 {
+				x: 20.0,
+				y: 75.0,
+			},
+			color: Color { r: 232, g: 190, b: 172, a: 255 },
+			velocity: Vector2 {
+				x: 0.0,
+				y: 0.0
+			},
+			controls: Controls::Keyboard {
+				move_up: KeyboardKey::KEY_W,
+				move_down: KeyboardKey::KEY_S,
+				move_left: KeyboardKey::KEY_A,
+				move_right: KeyboardKey::KEY_D,
+				jump: KeyboardKey::KEY_SPACE,
+			},
+			movement_speed: 800.0,
+			jump_power: 400000.0,
+		});
 	}
 
 	fn update(&mut self, d: &mut RaylibDrawHandle, game_state: &mut GameState, delta: f32) {
@@ -277,6 +302,7 @@ impl Scene for GameScene {
 
 		let player_1 = &self.players[0];
 		let player_2 = &self.players[1];
+		let player_3 = &self.players[2];
 
 		//player 1
 		draw_player(&player_1, d);
@@ -330,6 +356,7 @@ impl Scene for GameScene {
 			Color::WHITE
 		);
 
+		draw_player(&player_3, d);
 	}
 
 }
