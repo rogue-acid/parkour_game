@@ -39,7 +39,7 @@ impl PhysicsObject {
 		point.x > self.pos.x &&
 		point.x < self.pos.x + self.dim.x &&
 		point.y > self.pos.y &&
-		point.x < self.pos.y + self.dim.y
+		point.y < self.pos.y + self.dim.y
 	}
 
 	fn corners(&self) -> [Vector2; 4] {
