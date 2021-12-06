@@ -10,6 +10,7 @@ struct Player {
 	controls: Controls,
 	movement_speed: f32,
 	jump_power: f32,
+	can_jump: bool,
 }
 
 struct Block {
@@ -134,8 +135,9 @@ impl Collidable for PhysicsObject {
 fn handle_player_movement(player: &mut Player, delta: f32, handle: &mut raylib::core::drawing::RaylibDrawHandle) {
 	match player.controls {
 		Controls::Keyboard { jump, move_left, move_right, .. } => {
-			if handle.is_key_pressed(jump) {
-				player.velocity.y = -player.jump_power * delta
+			if handle.is_key_pressed(jump) && player.can_jump == true {
+				player.can_jump = false;
+				player.velocity.y = -player.jump_power * delta;
 			}
 
 			if handle.is_key_down(move_left) {
@@ -173,16 +175,56 @@ const GRAVITY: f32 = 2750.0;
 
 impl Scene for GameScene {
 	fn init(&mut self) {
+
+		// grass
+		// self.blocks.push(Block {
+		// 	pos: Vector2 { x: 0.0, y: 600.0 },
+		// 	dim: Vector2 { x: 1280.0, y: 120.0 },
+		// 	color: Color { r: 8, g: 255, b: 65, a: 255 },
+		// });
+
+		// rock
 		self.blocks.push(Block {
 			pos: Vector2 { x: 0.0, y: 600.0 },
 			dim: Vector2 { x: 1280.0, y: 120.0 },
-			color: Color { r: 8, g: 255, b: 65, a: 255 },
+			color: Color { r: 125, g: 125, b: 130, a: 255 },
 		});
 
 		self.blocks.push(Block {
-			pos: Vector2 { x: 70.0, y: 300.0 },
-			dim: Vector2 { x: 350.0, y: 120.0 },
-			color: Color::PURPLE,
+			pos: Vector2 { x: 80.0, y: 300.0 },
+			dim: Vector2 { x: 150.0, y: 120.0 },
+			color: Color {r: 128, g: 123,b: 130, a: 255},
+		});
+
+
+		self.blocks.push(Block {
+			pos: Vector2 { x: 300.0, y: 200.0 },
+			dim: Vector2 { x: 30.0, y: 40.0 },
+			color: Color {r: 130, g: 110, b: 120, a: 255},
+		});
+
+		self.blocks.push(Block {
+			pos: Vector2 { x: 600.0, y: 200.0 },
+			dim: Vector2 { x: 30.0, y: 40.0 },
+			color: Color {r: 130, g: 110, b: 120, a: 255},
+		});
+
+		self.blocks.push(Block {
+			pos: Vector2 { x: 900.0, y: 200.0 },
+			dim: Vector2 { x: 30.0, y: 40.0 },
+			color: Color {r: 130, g: 110, b: 120, a: 255},
+		});
+
+		self.blocks.push(Block {
+			pos: Vector2 { x: 1100.0, y: 200.0 },
+			dim: Vector2 { x: 100.0, y: 40.0 },
+			color: Color {r: 100, g: 110, b: 120, a: 255},
+		});
+
+		self.blocks.push(Block {
+			pos: Vector2 { x: 1200.0, y: 0.0 },
+			dim: Vector2 { x: 30.0, y: 240.0 },
+			color: Color {r: 100, g: 110, b: 120, a: 255},
 		});
 
 		self.players.push(Player {
@@ -208,6 +250,7 @@ impl Scene for GameScene {
 			},
 			movement_speed: 800.0,
 			jump_power: 400000.0,
+			can_jump: true,
 		});
 
 		self.players.push(Player {
@@ -233,6 +276,7 @@ impl Scene for GameScene {
 			},
 			movement_speed: 800.0,
 			jump_power: 400000.0,
+			can_jump: true,
 		});
 
 		self.players.push(Player {
@@ -258,6 +302,7 @@ impl Scene for GameScene {
 			},
 			movement_speed: 800.0,
 			jump_power: 400000.0,
+			can_jump: true,
 		});
 	}
 
@@ -271,6 +316,9 @@ impl Scene for GameScene {
 			for block in self.blocks.iter() {
 				if player.is_colliding(block) {
 					player.pos.y -= player.velocity.y * delta;
+					if player.velocity.y > 0.0 {
+						player.can_jump = true;
+					}
 					player.velocity.y = 0.0;
 				}
 			}
