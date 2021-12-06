@@ -151,7 +151,7 @@ impl Collidable for PhysicsObject {
 fn handle_player_movement(player: &mut Player, delta: f32, handle: &mut raylib::core::drawing::RaylibDrawHandle) {
 	match player.controls {
 		Controls::Keyboard { jump, move_left, move_right, .. } => {
-			if handle.is_key_pressed(jump) && player.can_jump == true {
+			if handle.is_key_down(jump) && player.can_jump {
 				player.can_jump = false;
 				player.velocity.y = -player.jump_power * delta;
 			}
@@ -166,7 +166,7 @@ fn handle_player_movement(player: &mut Player, delta: f32, handle: &mut raylib::
 		},
 
 		Controls::GamePad { id, jump, move_left_right, deadzone_amount, .. } => {
-			if handle.is_gamepad_button_pressed(id, jump) {
+			if handle.is_gamepad_button_down(id, jump) {
 				player.velocity.y = -player.jump_power * delta
 			}
 
