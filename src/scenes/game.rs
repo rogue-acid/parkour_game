@@ -1,6 +1,6 @@
 use raylib::prelude::*;
 
-use crate::{ GameState, Scene, SceneType };
+use crate::{ GameState, Scene, SceneType, Asset };
 
 struct Player {
 	pos: Vector2,
@@ -66,6 +66,22 @@ fn draw_player(player: &Player, handle: &mut raylib::core::drawing::RaylibDrawHa
 		player.pos,
 		player.size,
 		player.color,
+	);
+}
+
+fn draw_asset_on_player(player: &Player, asset: &Asset, handle: &mut raylib::core::drawing::RaylibDrawHandle) {
+	let scale = asset.info.scale;
+
+	// TODO: get the assets size
+	let asset_center = Vector2 { x: 500.0, y: 500.0 } / 2.0;
+	let asset_draw_pos = player.pos - (asset_center * scale);
+
+	handle.draw_texture_ex(
+		&asset.texture,
+		asset_draw_pos + asset.info.offset,
+		0.0,
+		scale,
+		Color::WHITE
 	);
 }
 
@@ -348,62 +364,19 @@ impl Scene for GameScene {
 			)
 		}
 
+
 		let player_1 = &self.players[0];
-		let player_2 = &self.players[1];
-		let player_3 = &self.players[2];
-
-		//player 1
 		draw_player(&player_1, d);
+		draw_asset_on_player(&player_1, &game_state.assets["hat"], d);
+		draw_asset_on_player(&player_1, &game_state.assets["bowtie"], d);
 
-		let scale = 0.15;
-		d.draw_texture_ex(
-			&game_state.assets["hat"],
-			player_1.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 10.0, y: 0.0 },
-			0.0,
-			scale,
-			Color::WHITE
-		);
-
-
-		let scale = 0.075;
-		d.draw_texture_ex(
-			&game_state.assets["bowtie"],
-			player_1.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 12.0, y: 40.0 },
-			0.0,
-			scale,
-			Color::WHITE
-		);
-
-		// player 2
-		let scale = 0.2;
-		d.draw_texture_ex(
-			&game_state.assets["branch"],
-			player_2.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 12.0, y: 40.0 },
-			0.0,
-			scale,
-			Color::WHITE
-		);
-
-		let scale = 0.2;
-		d.draw_texture_ex(
-			&game_state.assets["bird"],
-			player_2.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 25.0, y: 22.0 },
-			0.0,
-			scale,
-			Color::WHITE
-		);
-
+		let player_2 = &self.players[1];
+		draw_asset_on_player(&player_2, &game_state.assets["branch"], d);
+		draw_asset_on_player(&player_2, &game_state.assets["bird"], d);
 		draw_player(&player_2, d);
+		draw_asset_on_player(&player_2, &game_state.assets["pirate_hat"], d);
 
-		let scale = 0.4;
-		d.draw_texture_ex(
-			&game_state.assets["pirate_hat"],
-			player_2.pos - (Vector2 { x: 500.0, y: 500.0 } / 2.0 * scale) + Vector2 { x: 8.0, y: 0.0 },
-			0.0,
-			scale,
-			Color::WHITE
-		);
-
+		let player_3 = &self.players[2];
 		draw_player(&player_3, d);
 	}
 

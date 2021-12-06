@@ -7,8 +7,20 @@ mod scenes;
 struct GameState {
 	should_close: bool,
 	current_scene: SceneType,
-	assets: HashMap<String, Texture2D>,
+	assets: HashMap<String, Asset>,
 	window_size: Vector2,
+}
+
+struct Asset {
+    info: AssetInfo,
+    texture: Texture2D,
+}
+
+struct AssetInfo {
+    name: String,
+    path: String,
+    scale: f32,
+    offset: Vector2,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -45,34 +57,52 @@ fn main() {
 
 	rl.set_exit_key(Some(KeyboardKey::KEY_Q));
 
+    let asset_info_vec = vec![
+        AssetInfo {
+            name: "hat".into(),
+            path: "assets/sprites/hat.png".into(),
+            scale: 0.15,
+            offset: Vector2 { x: 10.0, y: 0.0 },
+        },
 
-	game_state.assets.insert(
-		"hat".into(),
-		rl.load_texture(&thread, "assets/sprites/hat.png").unwrap(),
-	);
+        AssetInfo {
+            name: "bowtie".into(),
+            path: "assets/sprites/bowtie.png".into(),
+            scale: 0.075,
+            offset: Vector2 { x: 12.0, y: 40.0 },
+        },
 
-	game_state.assets.insert(
-		"bowtie".into(),
-		rl.load_texture(&thread, "assets/sprites/bowtie.png").unwrap(),
-	);
+        AssetInfo {
+            name: "pirate_hat".into(),
+            path: "assets/sprites/pirate_hat.png".into(),
+            scale: 0.4,
+            offset: Vector2 { x: 8.0, y: 0.0 },
+        },
 
-	game_state.assets.insert(
-		"pirate_hat".into(),
-		rl.load_texture(&thread, "assets/sprites/pirate_hat.png").unwrap(),
-	);
+        AssetInfo {
+            name: "branch".into(),
+            path: "assets/sprites/branch.png".into(),
+            scale: 0.2,
+            offset: Vector2 { x: 12.0, y: 40.0 },
+        },
 
-	game_state.assets.insert(
-		"branch".into(),
-		rl.load_texture(&thread, "assets/sprites/branch.png").unwrap(),
-	);
+        AssetInfo {
+            name: "bird".into(),
+            path: "assets/sprites/bird.png".into(),
+            scale: 0.2,
+            offset: Vector2 { x: 40.0, y: 22.0 },
+        },
+    ];
 
-	let mut bird_image = Image::load_image("assets/sprites/bird.png").unwrap();
-	bird_image.flip_horizontal();
-
-	game_state.assets.insert(
-		"bird".into(),
-		rl.load_texture_from_image(&thread, &bird_image).unwrap(),
-	);
+    for asset_info in asset_info_vec {
+        game_state.assets.insert(
+            asset_info.name.clone(),
+            Asset {
+                texture: rl.load_texture(&thread, asset_info.path.clone().as_str()).unwrap(),
+                info: asset_info,
+            },
+        );
+    }
 
 	let mut game_scene = scenes::game::GameScene::default();
 	game_scene.init();
