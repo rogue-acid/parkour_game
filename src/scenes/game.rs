@@ -183,7 +183,7 @@ fn handle_player_movement(player: &mut Player, delta: f32, handle: &mut raylib::
 
 #[derive(Default)]
 pub struct GameScene {
-	players: Vec<Player>,
+	player: Option<Player>,
 	blocks: Vec<Block>,
 }
 
@@ -191,13 +191,6 @@ const GRAVITY: f32 = 2750.0;
 
 impl Scene for GameScene {
 	fn init(&mut self) {
-
-		// grass
-		// self.blocks.push(Block {
-		// 	pos: Vector2 { x: 0.0, y: 600.0 },
-		// 	dim: Vector2 { x: 1280.0, y: 120.0 },
-		// 	color: Color { r: 8, g: 255, b: 65, a: 255 },
-		// });
 
 		// rock
 		self.blocks.push(Block {
@@ -243,59 +236,7 @@ impl Scene for GameScene {
 			color: Color {r: 100, g: 110, b: 120, a: 255},
 		});
 
-		self.players.push(Player {
-			pos: Vector2 {
-				x: 630.0,
-				y: 322.0,
-			},
-			size: Vector2 {
-				x: 20.0,
-				y: 75.0,
-			},
-			color: Color { r: 232, g: 190, b: 172, a: 255 },
-			velocity: Vector2 {
-				x: 0.0,
-				y: 0.0
-			},
-			controls: Controls::GamePad {
-				// TODO: this should be auto detected
-				id: 0,
-				jump: GamepadButton::GAMEPAD_BUTTON_RIGHT_FACE_DOWN,
-				deadzone_amount: 0.14,
-				move_left_right: GamepadAxis::GAMEPAD_AXIS_LEFT_X,
-			},
-			movement_speed: 800.0,
-			jump_power: 400000.0,
-			can_jump: true,
-		});
-
-		self.players.push(Player {
-			pos: Vector2 {
-				x: 630.0,
-				y: 322.0,
-			},
-			size: Vector2 {
-				x: 20.0,
-				y: 75.0,
-			},
-			color: Color { r: 232, g: 190, b: 172, a: 255 },
-			velocity: Vector2 {
-				x: 0.0,
-				y: 0.0
-			},
-			controls: Controls::Keyboard {
-				move_up: KeyboardKey::KEY_UP,
-				move_down: KeyboardKey::KEY_DOWN,
-				move_left: KeyboardKey::KEY_LEFT,
-				move_right: KeyboardKey::KEY_RIGHT,
-				jump: KeyboardKey::KEY_RIGHT_CONTROL,
-			},
-			movement_speed: 800.0,
-			jump_power: 400000.0,
-			can_jump: true,
-		});
-
-		self.players.push(Player {
+		self.player = Some(Player {
 			pos: Vector2 {
 				x: 630.0,
 				y: 322.0,
@@ -323,8 +264,8 @@ impl Scene for GameScene {
 	}
 
 	fn update(&mut self, d: &mut RaylibDrawHandle, game_state: &mut GameState, delta: f32) {
-		for mut player in self.players.iter_mut() {
-			handle_player_movement(&mut player, delta, d);
+		if let Some(player) = &mut self.player {
+			handle_player_movement(player, delta, d);
 
 			player.velocity.y += GRAVITY * delta;
 
@@ -365,19 +306,11 @@ impl Scene for GameScene {
 		}
 
 
-		let player_1 = &self.players[0];
-		draw_player(&player_1, d);
-		draw_asset_on_player(&player_1, &game_state.assets["hat"], d);
-		draw_asset_on_player(&player_1, &game_state.assets["bowtie"], d);
-
-		let player_2 = &self.players[1];
-		draw_asset_on_player(&player_2, &game_state.assets["branch"], d);
-		draw_asset_on_player(&player_2, &game_state.assets["bird"], d);
-		draw_player(&player_2, d);
-		draw_asset_on_player(&player_2, &game_state.assets["pirate_hat"], d);
-
-		let player_3 = &self.players[2];
-		draw_player(&player_3, d);
+		if let Some(player) = &self.player {
+			draw_player(&player, d);
+			draw_asset_on_player(&player, &game_state.assets["hat"], d);
+			draw_asset_on_player(&player, &game_state.assets["bowtie"], d);
+		}
 	}
 
 }
