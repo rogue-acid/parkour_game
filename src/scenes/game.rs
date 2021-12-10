@@ -61,15 +61,20 @@ enum Controls {
 	}
 }
 
-fn draw_player(player: &Player, handle: &mut raylib::core::drawing::RaylibDrawHandle) {
+fn draw_player(player: &Player, camera_pos: &Vector2, handle: &mut raylib::core::drawing::RaylibDrawHandle) {
 	handle.draw_rectangle_v(
-		player.pos,
+		player.pos - *camera_pos,
 		player.size,
 		player.color,
 	);
 }
 
-fn draw_asset_on_player(player: &Player, asset: &Asset, handle: &mut raylib::core::drawing::RaylibDrawHandle) {
+fn draw_asset_on_player(
+	player: &Player,
+	asset: &Asset,
+	camera_pos: &Vector2,
+	handle: &mut raylib::core::drawing::RaylibDrawHandle
+) {
 	let scale = asset.info.scale;
 
 	// TODO: get the assets size
@@ -78,7 +83,7 @@ fn draw_asset_on_player(player: &Player, asset: &Asset, handle: &mut raylib::cor
 
 	handle.draw_texture_ex(
 		&asset.texture,
-		asset_draw_pos + asset.info.offset,
+		asset_draw_pos + asset.info.offset - *camera_pos,
 		0.0,
 		scale,
 		Color::WHITE
@@ -183,6 +188,7 @@ fn handle_player_movement(player: &mut Player, delta: f32, handle: &mut raylib::
 
 #[derive(Default)]
 pub struct GameScene {
+	camera_pos: Vector2,
 	player: Option<Player>,
 	blocks: Vec<Block>,
 }
@@ -191,55 +197,53 @@ const GRAVITY: f32 = 2750.0;
 
 impl Scene for GameScene {
 	fn init(&mut self) {
-
-		// rock
 		self.blocks.push(Block {
-			pos: Vector2 { x: 0.0, y: 600.0 },
+			pos: Vector2 { x: -640.0, y: 240.0 },
 			dim: Vector2 { x: 1280.0, y: 120.0 },
 			color: Color { r: 125, g: 125, b: 130, a: 255 },
 		});
 
 		self.blocks.push(Block {
-			pos: Vector2 { x: 80.0, y: 300.0 },
+			pos: Vector2 { x: -560.0, y: -60.0 },
 			dim: Vector2 { x: 150.0, y: 120.0 },
 			color: Color {r: 128, g: 123,b: 130, a: 255},
 		});
 
 
 		self.blocks.push(Block {
-			pos: Vector2 { x: 300.0, y: 200.0 },
+			pos: Vector2 { x: -340.0, y: -160.0 },
 			dim: Vector2 { x: 30.0, y: 40.0 },
 			color: Color {r: 130, g: 110, b: 120, a: 255},
 		});
 
 		self.blocks.push(Block {
-			pos: Vector2 { x: 600.0, y: 200.0 },
+			pos: Vector2 { x: -40.0, y: -160.0 },
 			dim: Vector2 { x: 30.0, y: 40.0 },
 			color: Color {r: 130, g: 110, b: 120, a: 255},
 		});
 
 		self.blocks.push(Block {
-			pos: Vector2 { x: 900.0, y: 200.0 },
+			pos: Vector2 { x: 260.0, y: -160.0 },
 			dim: Vector2 { x: 30.0, y: 40.0 },
 			color: Color {r: 130, g: 110, b: 120, a: 255},
 		});
 
 		self.blocks.push(Block {
-			pos: Vector2 { x: 1100.0, y: 200.0 },
+			pos: Vector2 { x: 460.0, y: -160.0 },
 			dim: Vector2 { x: 100.0, y: 40.0 },
 			color: Color {r: 100, g: 110, b: 120, a: 255},
 		});
 
 		self.blocks.push(Block {
-			pos: Vector2 { x: 1200.0, y: 0.0 },
+			pos: Vector2 { x: 560.0, y: -360.0 },
 			dim: Vector2 { x: 30.0, y: 240.0 },
 			color: Color {r: 100, g: 110, b: 120, a: 255},
 		});
 
 		self.player = Some(Player {
 			pos: Vector2 {
-				x: 630.0,
-				y: 322.0,
+				x: 0.0,
+				y: 0.0,
 			},
 			size: Vector2 {
 				x: 20.0,
@@ -297,19 +301,20 @@ impl Scene for GameScene {
 	fn display(&mut self, d: &mut RaylibDrawHandle, game_state: &mut GameState) {
 		d.clear_background(Color { r: 43, g: 255, b: 241, a: 255 });
 
+		let camera_pos = self.camera_pos - game_state.window_size / 2.0;
+
 		for block in self.blocks.iter() {
 			d.draw_rectangle_v(
-				block.pos,
+				block.pos - camera_pos,
 				block.dim,
 				block.color,
 			)
 		}
 
-
 		if let Some(player) = &self.player {
-			draw_player(&player, d);
-			draw_asset_on_player(&player, &game_state.assets["hat"], d);
-			draw_asset_on_player(&player, &game_state.assets["bowtie"], d);
+			draw_player(&player, &camera_pos, d);
+			draw_asset_on_player(&player, &game_state.assets["hat"], &camera_pos, d);
+			draw_asset_on_player(&player, &game_state.assets["bowtie"], &camera_pos, d);
 		}
 	}
 
